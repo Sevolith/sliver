@@ -16,7 +16,7 @@ RUN apt-get update --fix-missing && apt-get -y install \
     git build-essential zlib1g zlib1g-dev wget zip unzip
 
 ### Add sliver user
-RUN groupadd -g 999 sliver && useradd -r -u 999 -g sliver sliver
+RUN groupadd -g 1000 sliver && useradd -r -u 1000 -g sliver sliver
 RUN mkdir -p /home/sliver/ && chown -R sliver:sliver /home/sliver
 
 ### Build sliver:
@@ -25,6 +25,7 @@ ADD . /go/src/github.com/bishopfox/sliver/
 RUN make clean-all 
 RUN make 
 RUN cp -vv sliver-server /opt/sliver-server 
+RUN cp -vv sliver-client /opt/sliver-client
 
 # STAGE: test
 ## Run unit tests against the compiled instance
@@ -72,14 +73,15 @@ RUN apt-get remove -y curl gnupg \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ### Add sliver user
-RUN groupadd -g 999 sliver \
-    && useradd -r -u 999 -g sliver sliver \
+RUN groupadd -g 1000 sliver \
+    && useradd -r -u 1000 -g sliver sliver \
     && mkdir -p /home/sliver/ \
     && chown -R sliver:sliver /home/sliver \
     && su -l sliver -c 'mkdir -p ~/.msf4/ && touch ~/.msf4/initial_setup_complete'
 
 ### Copy compiled binary
 COPY --from=base /opt/sliver-server  /opt/sliver-server
+COPY --from=base /opt/sliver-client  /opt/sliver-client
 
 ### Unpack Sliver:
 USER sliver
@@ -103,8 +105,8 @@ RUN apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ### Add sliver user
-RUN groupadd -g 999 sliver \
-    && useradd -r -u 999 -g sliver sliver \
+RUN groupadd -g 1000 sliver \
+    && useradd -r -u 1000 -g sliver sliver \
     && mkdir -p /home/sliver/ \
     && chown -R sliver:sliver /home/sliver
 
